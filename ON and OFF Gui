@@ -1,0 +1,45 @@
+local TweenService = game:GetService("TweenService")
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local switchBG = Instance.new("ImageLabel")
+switchBG.Image = "https://raw.githubusercontent.com/johncrismathewcalupe-pixel/Plane-Bomb-Tracking-/refs/heads/main/Picsart_25-08-14_18-17-59-904.png"
+switchBG.Size = UDim2.new(0, 100, 0, 50)
+switchBG.Position = UDim2.new(0.5, -50, 0.5, -25)
+switchBG.BackgroundTransparency = 1
+switchBG.Parent = screenGui
+
+local toggle = Instance.new("ImageLabel")
+toggle.Image = "https://raw.githubusercontent.com/johncrismathewcalupe-pixel/Plane-Bomb-Tracking-/refs/heads/main/Picsart_25-08-14_18-11-59-047.png"
+toggle.Size = UDim2.new(0, 48, 0, 48)
+toggle.Position = UDim2.new(0, 1, 0, 1)
+toggle.BackgroundTransparency = 1
+toggle.Parent = switchBG
+
+local isOn = false
+local tweenTime = 0.25 -- slightly longer for smoother motion
+
+local tweenInfoMove = TweenInfo.new(tweenTime, Enum.EasingStyle.Sine, Enum.EasingDirection.Out)
+local tweenInfoScale = TweenInfo.new(tweenTime/2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+
+local function toggleSwitch()
+    isOn = not isOn
+    local targetPos = isOn and UDim2.new(0, switchBG.AbsoluteSize.X - toggle.AbsoluteSize.X - 2, 0, 1) or UDim2.new(0, 1, 0, 1)
+    
+    -- Smooth slide
+    local tweenMove = TweenService:Create(toggle, tweenInfoMove, {Position = targetPos})
+    tweenMove:Play()
+    
+    -- Optional tiny bounce/scale effect
+    local tweenUp = TweenService:Create(toggle, tweenInfoScale, {Size = toggle.Size + UDim2.new(0,4,0,4)})
+    local tweenDown = TweenService:Create(toggle, tweenInfoScale, {Size = toggle.Size})
+    tweenUp:Play()
+    tweenUp.Completed:Connect(function() tweenDown:Play() end)
+end
+
+switchBG.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        toggleSwitch()
+    end
+end)
